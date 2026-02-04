@@ -1,0 +1,24 @@
+apiVersion: deploy.cloud.google.com/v1
+kind: DeliveryPipeline
+metadata:
+  name: flask-delivery-pipeline
+serialPipeline:
+  stages:
+  - targetId: gke-prod
+    strategy:
+      canary:
+        runtimeConfig:
+          kubernetes:
+            serviceNetworking:
+              service: "flask-service"
+              deployment: "flask-app"
+        canaryDeployment:
+          percentages: [25, 50] # 25% traffic first, then 50%, then 100%
+---
+apiVersion: deploy.cloud.google.com/v1
+kind: Target
+metadata:
+  name: gke-prod
+gke:
+  cluster: projects/ninth-iris-485511-r4/locations/us-central1/clusters/cluster-1
+  
